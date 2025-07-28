@@ -13,6 +13,8 @@ import { saveNotes, exportNotesAsJson } from './storage.js';
 export function initializeUI(noteManager) {
     const noteBoard = document.getElementById('note-board');
     const exportBtn = document.getElementById('export-btn');
+    const sortAscBtn = document.getElementById('sort-asc-btn');
+    const sortDescBtn = document.getElementById('sort-desc-btn');
 
     // Double click on board to create a new note
     noteBoard.addEventListener('dblclick', (event) => {
@@ -27,10 +29,51 @@ export function initializeUI(noteManager) {
         exportNotes(noteManager);
     });
 
+    // Sort Ascending
+    sortAscBtn.addEventListener('click', () => {
+        sortAndRenderNotes(noteManager, true);
+    });
+
+    // Sort Descending
+    sortDescBtn.addEventListener('click', () => {
+        sortAndRenderNotes(noteManager, false);
+    });
+
     // Setup auto-save timer
     setupAutoSave(noteManager);
 }
+// Helper function
+function sortAndRenderNotes(noteManager, ascending = true) {
+    // Get and sort notes
+    const notes = noteManager.getAllNotes();
+    notes.sort((a, b) => {
+        const t1 = new Date(a.timestamp || 0).getTime();
+        const t2 = new Date(b.timestamp || 0).getTime();
+        return ascending ? t1 - t2 : t2 - t1;
+    });
 
+    // Clear the manager and re-add notes in sorted order
+    noteManager.notes.clear();
+    notes.forEach(note => noteManager.addNote(note));
+
+    // Clear the board
+    const noteBoard = document.getElementById('note-board');
+    noteBoard.innerHTML = '';
+
+    // Arrange notes horizontally, e.g., 20px from left, 20px apart
+    let startX = 20;
+    const startY = 20;
+    const gapX = 20;
+    const noteWidth = 200; // Adjust if your notes are a different width
+
+    notes.forEach((note, idx) => {
+        // Set new position for each note
+        note.updatePosition(startX + idx * (noteWidth + gapX), startY);
+        const noteElement = note.createElement();
+        setupNoteEventListeners(noteElement, note, noteManager);
+        noteBoard.appendChild(noteElement);
+    });
+}
 /**
  * Create a new note at the specified position
  * @param {number} x - X position for the new note
@@ -137,7 +180,7 @@ export function setupNoteEventListeners(noteElement, note, noteManager) {
         input.click();
         setTimeout(() => document.body.removeChild(input), 1000);
     });
-    
+
     // Drag start
     noteElement.addEventListener('mousedown', (event) => {
         // Ignore if clicking on buttons or content area
