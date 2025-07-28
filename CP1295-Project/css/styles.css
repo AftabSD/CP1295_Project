@@ -41,7 +41,9 @@ header {
     gap: 1rem;
 }
 
-#export-btn {
+#export-btn,
+#sort-asc-btn,
+#sort-desc-btn {
     background-color: white;
     color: var(--primary-color);
     border: none;
@@ -52,7 +54,9 @@ header {
     transition: all 0.2s ease;
 }
 
-#export-btn:hover {
+#export-btn:hover,
+#sort-asc-btn:hover,
+#sort-desc-btn:hover {
     background-color: #ecf0f1;
     transform: translateY(-2px);
 }
