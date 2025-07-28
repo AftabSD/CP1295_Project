@@ -18,13 +18,15 @@ export class Note {
      * @param {number} options.x - X position on the board
      * @param {number} options.y - Y position on the board
      * @param {string} options.color - CSS class for note color
+     * @param {string} options.timestamp - ISO string for creation time
      */
-    constructor({ id = null, content = '', x = 0, y = 0, color = null }) {
+    constructor({ id = null, content = '', x = 0, y = 0, color = null, timestamp = null }) {
         this.id = id || this.generateId();
         this.content = content;
         this.x = x;
         this.y = y;
         this.color = color || this.getRandomColor();
+        this.timestamp = timestamp || new Date().toISOString();
         this.element = null;
     }
 
@@ -62,10 +64,25 @@ export class Note {
         // Set content
         const contentElement = noteElement.querySelector('.note-content');
         contentElement.textContent = this.content;
+
+        // Set timestamp
+        const timestampElement = document.createElement('div');
+        timestampElement.className = 'note-timestamp';
+        timestampElement.textContent = this.formatTimestamp();
+        noteElement.appendChild(timestampElement);
         
         // Store reference to the element
         this.element = noteElement;
         return noteElement;
+    }
+
+    /**
+     * Format the timestamp for display
+     * @returns {string}
+     */
+    formatTimestamp() {
+        const date = new Date(this.timestamp);
+        return date.toLocaleString();
     }
 
     /**
@@ -106,7 +123,8 @@ export class Note {
             content: this.content,
             x: this.x,
             y: this.y,
-            color: this.color
+            color: this.color,
+            timestamp: this.timestamp
         };
     }
 
