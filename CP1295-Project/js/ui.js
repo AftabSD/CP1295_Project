@@ -82,6 +82,7 @@ export function setupNoteEventListeners(noteElement, note, noteManager) {
     const contentElement = noteElement.querySelector('.note-content');
     const deleteButton = noteElement.querySelector('.delete-btn');
     const quoteButton = noteElement.querySelector('.quote-btn');
+    const imageButton = noteElement.querySelector('.image-btn');
     
     // Track whether the note is being dragged
     let isDragging = false;
@@ -113,6 +114,28 @@ export function setupNoteEventListeners(noteElement, note, noteManager) {
             // Display error in console
             console.error('Failed to fetch quote:', error);
         }
+    });
+    
+    // Image button handler
+    imageButton.addEventListener('click', () => {
+        // Create a hidden file input
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.style.display = 'none';
+        input.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    note.setImage(evt.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+        document.body.appendChild(input);
+        input.click();
+        setTimeout(() => document.body.removeChild(input), 1000);
     });
     
     // Drag start
