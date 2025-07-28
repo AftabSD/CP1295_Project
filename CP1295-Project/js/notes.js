@@ -20,7 +20,7 @@ export class Note {
      * @param {string} options.color - CSS class for note color
      * @param {string} options.timestamp - ISO string for creation time
      */
-    constructor({ id = null, content = '', x = 0, y = 0, color = null, timestamp = null }) {
+    constructor({ id = null, content = '', x = 0, y = 0, color = null, timestamp = null, image = null }) {
         this.id = id || this.generateId();
         this.content = content;
         this.x = x;
@@ -28,6 +28,7 @@ export class Note {
         this.color = color || this.getRandomColor();
         this.timestamp = timestamp || new Date().toISOString();
         this.element = null;
+        this.image = image || null;
     }
 
     /**
@@ -71,6 +72,15 @@ export class Note {
         timestampElement.textContent = this.formatTimestamp();
         noteElement.appendChild(timestampElement);
         
+        // Insert image if present
+        if (this.image) {
+            const img = document.createElement('img');
+            img.src = this.image;
+            img.className = 'note-image';
+            img.alt = 'Note image';
+            noteElement.insertBefore(img, noteElement.querySelector('.note-content'));
+        }
+
         // Store reference to the element
         this.element = noteElement;
         return noteElement;
@@ -114,6 +124,23 @@ export class Note {
     }
 
     /**
+     * Set the image for this note
+     * @param {string} dataUrl - Image as Data URL
+     */
+    setImage(dataUrl) {
+        this.image = dataUrl;
+        if (this.element) {
+            let img = this.element.querySelector('.note-image');
+            if (!img) {
+                img = document.createElement('img');
+                img.className = 'note-image';
+                this.element.insertBefore(img, this.element.querySelector('.note-content'));
+            }
+            img.src = dataUrl;
+        }
+    }
+
+    /**
      * Convert note to plain object for storage
      * @returns {Object} Plain object representation of the note
      */
@@ -124,7 +151,8 @@ export class Note {
             x: this.x,
             y: this.y,
             color: this.color,
-            timestamp: this.timestamp
+            timestamp: this.timestamp,
+            image: this.image
         };
     }
 
