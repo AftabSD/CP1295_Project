@@ -121,7 +121,13 @@ header {
     line-height: 1.4;
     overflow-wrap: break-word;
 }
-
+.note-timestamp {
+    font-size: 0.75rem;
+    color: #888;
+    margin-top: 0.5rem;
+    text-align: right;
+    user-select: none;
+}
 /* Note colors */
 .note-blue {
     background-color: var(--note-blue);
